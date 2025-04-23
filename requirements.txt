@@ -1,0 +1,7 @@
+fastapi==0.115.2
+fastapi-pagination
+fastapi-cli==0.0.5
+pydantic
+beautifulsoup4
+requests==2.32.3
+uvicorn==0.32.1
