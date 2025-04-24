@@ -8,15 +8,11 @@ def scraping_pagina(subopcao, opcao, conditions=None):
     if conditions and conditions is not None:
         ano = conditions
 
-    if isinstance(ano, str):
-        print("string")
-    elif isinstance(ano, list):
-        print("list")
-
     if ano == None or isinstance(ano, str) and ano == "todos":
         url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?subopcao=subopt_{subopcao}&opcao=opt_{opcao}"
     elif isinstance(ano, str) and ano != "todos":
         url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao=opt_{opcao}&subopcao=subopt_{subopcao}"
+
     # Fazendo a requisição HTTP para obter o conteúdo da página
     response = requests.get(url)
 
@@ -68,9 +64,7 @@ def lista_scraping_pagina(subopcao, opcao, conditions=None):
         ano = conditions
     con_ano = []
     if isinstance(ano, list):
-        print("list")
         for a in ano:
-            print(a)
             url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={a}&opcao=opt_{opcao}&subopcao=subopt_{subopcao}"
             # Fazendo a requisição HTTP para obter o conteúdo da página
             response = requests.get(url)
@@ -81,7 +75,6 @@ def lista_scraping_pagina(subopcao, opcao, conditions=None):
                 soup = BeautifulSoup(response.content, "html.parser")
                 container = soup.find("div", class_="content_center")
                 title = container.find("p").text.strip()
-
                 # pegar o cabecalho
                 thead = container.find("thead")
                 cabecalho = []
@@ -113,5 +106,4 @@ def lista_scraping_pagina(subopcao, opcao, conditions=None):
                 # Retornando o título da página
                 output = {title: result}
                 con_ano.append(output)
-                print(con_ano)
     return con_ano
