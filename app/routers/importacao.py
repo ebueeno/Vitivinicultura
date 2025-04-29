@@ -14,16 +14,16 @@ router = APIRouter(prefix="/importacao", tags=["importacao"])
 )
 async def vinho_de_mesa(conditions: Optional[WrapperRequest] = None):
     ano = None
+
     if conditions and hasattr(conditions, "conditions") and conditions.conditions:
+
         for condition in conditions.conditions:
             if "ano" in condition:
                 ano = condition["ano"]
 
     if isinstance(ano, list):
-        print("lista na chamada")
         resultado = lista_scraping_pagina(subopcao="01", opcao="05", conditions=ano)
     else:
-        print("string na chamada")
         resultado = scraping_pagina(subopcao="01", opcao="05", conditions=ano)
 
     return resultado
@@ -42,10 +42,8 @@ async def espumantes(conditions: Optional[WrapperRequest] = None):
                 ano = condition["ano"]
 
     if isinstance(ano, list):
-        print("lista na chamada")
         resultado = lista_scraping_pagina(subopcao="02", opcao="05", conditions=ano)
     else:
-        print("string na chamada")
         resultado = scraping_pagina(subopcao="02", opcao="05", conditions=ano)
 
     return resultado
@@ -64,10 +62,8 @@ async def uvas_frescas(conditions: Optional[WrapperRequest] = None):
                 ano = condition["ano"]
 
     if isinstance(ano, list):
-        print("lista na chamada")
         resultado = lista_scraping_pagina(subopcao="03", opcao="05", conditions=ano)
     else:
-        print("string na chamada")
         resultado = scraping_pagina(subopcao="03", opcao="05", conditions=ano)
 
     return resultado
@@ -86,10 +82,8 @@ async def uvas_passas(conditions: Optional[WrapperRequest] = None):
                 ano = condition["ano"]
 
     if isinstance(ano, list):
-        print("lista na chamada")
         resultado = lista_scraping_pagina(subopcao="04", opcao="05", conditions=ano)
     else:
-        print("string na chamada")
         resultado = scraping_pagina(subopcao="04", opcao="05", conditions=ano)
 
     return resultado
@@ -108,10 +102,8 @@ async def suco_de_uva(conditions: Optional[WrapperRequest] = None):
                 ano = condition["ano"]
 
     if isinstance(ano, list):
-        print("lista na chamada")
         resultado = lista_scraping_pagina(subopcao="05", opcao="05", conditions=ano)
     else:
-        print("string na chamada")
         resultado = scraping_pagina(subopcao="05", opcao="05", conditions=ano)
 
     return resultado

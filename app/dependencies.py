@@ -1,5 +1,18 @@
 from bs4 import BeautifulSoup
 import requests
+import re
+
+
+def valida_ano(soup):
+    nav = soup.find("p", id="p_ano")
+    texto = nav.find("label", class_="lbl_pesq").text.strip()
+    busca = re.search(r"\[(.*?)\]", texto)
+    if not busca:
+        return []
+    valor = busca.group(1)
+    ano = valor.split("-")
+
+    return ano
 
 
 def scraping_pagina(subopcao, opcao, conditions=None):
@@ -20,7 +33,11 @@ def scraping_pagina(subopcao, opcao, conditions=None):
     if response.status_code == 200:
         # Criando um objeto BeautifulSoup para analisar o HTML
         soup = BeautifulSoup(response.content, "html.parser")
+
+        if ano < valida_ano(soup)[0] or ano > valida_ano(soup)[1]:
+            return f"ano {ano} fora do intervalo permitido: {valida_ano(soup)[0]} - {valida_ano(soup)[1]}"
         container = soup.find("div", class_="content_center")
+
         title = container.find("p").text.strip()
 
         # pegar o cabecalho
@@ -51,6 +68,15 @@ def scraping_pagina(subopcao, opcao, conditions=None):
             linha = dict(zip(cabecalho, valores))
             result.append(linha)
 
+        tfoot = container.find("tfoot")
+        rodape = []
+        for tr in tfoot.find_all("tr"):
+
+            for td in tr.find_all("td"):
+                td.string = td.text.strip()
+                rodape.append(td.string)
+            rodape = dict(zip(cabecalho, rodape))
+        result.append(rodape)
         # Retornando o título da página
         output = {title: result}
         return output
@@ -63,6 +89,7 @@ def lista_scraping_pagina(subopcao, opcao, conditions=None):
     if conditions and conditions is not None:
         ano = conditions
     con_ano = []
+
     if isinstance(ano, list):
         for a in ano:
             url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={a}&opcao=opt_{opcao}&subopcao=subopt_{subopcao}"
@@ -73,8 +100,11 @@ def lista_scraping_pagina(subopcao, opcao, conditions=None):
             if response.status_code == 200:
                 # Criando um objeto BeautifulSoup para analisar o HTML
                 soup = BeautifulSoup(response.content, "html.parser")
+                if a < valida_ano(soup)[0] or a > valida_ano(soup)[1]:
+                    continue
                 container = soup.find("div", class_="content_center")
                 title = container.find("p").text.strip()
+
                 # pegar o cabecalho
                 thead = container.find("thead")
                 cabecalho = []
@@ -102,6 +132,15 @@ def lista_scraping_pagina(subopcao, opcao, conditions=None):
                     # cria o dicionário mapeando header → valor
                     linha = dict(zip(cabecalho, valores))
                     result.append(linha)
+                tfoot = container.find("tfoot")
+                rodape = []
+                for tr in tfoot.find_all("tr"):
+
+                    for td in tr.find_all("td"):
+                        td.string = td.text.strip()
+                        rodape.append(td.string)
+                    rodape = dict(zip(cabecalho, rodape))
+                result.append(rodape)
 
                 # Retornando o título da página
                 output = {title: result}
